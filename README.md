@@ -88,6 +88,10 @@ The `.kiro/` directory is the build itself made legible: always-loaded
 steering for the product, the technical rules, and the creature design
 language, plus one spec — requirements, design, tasks — per phase.
 
+## Licence
+
+[MIT](LICENSE).
+
 ## Status
 
 Phase 1 (skeleton) in progress. See

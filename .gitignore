@@ -1,0 +1,36 @@
+# Built binaries — both are single static files, built on demand
+/agent
+/lab
+/bin/
+/dist/
+*.exe
+*.test
+
+# The lab's database is one SQLite file, plus its WAL sidecars
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Secrets live in the environment and never in the repository
+.env
+.env.*
+!.env.example
+
+# Coverage and profiling output
+*.out
+*.prof
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Note: /.kiro is part of the hackathon submission. Never ignore it.

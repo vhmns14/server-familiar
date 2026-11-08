@@ -21,6 +21,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"server-familiar/internal/store"
 )
 
 type config struct {
@@ -65,9 +67,23 @@ func main() {
 }
 
 func run(cfg config) error {
-	// TODO(phase-1): open the store and run migrations (task 2.1), mount the
-	// ingest and enrolment handlers (task 4), the web pages and SSE hub
-	// (task 6), and the demo simulator when cfg.demo is set (task 7).
+	// Opening the store applies any pending migrations, so the lab is always
+	// started against an up-to-date schema.
+	db, err := store.Open(cfg.db)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	version, err := db.SchemaVersion()
+	if err != nil {
+		return err
+	}
+	log.Printf("database %s ready at schema v%d", cfg.db, version)
+
+	// TODO(phase-1): mount the ingest and enrolment handlers (task 4), the web
+	// pages and SSE hub (task 6), and the demo simulator when cfg.demo is set
+	// (task 7).
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")

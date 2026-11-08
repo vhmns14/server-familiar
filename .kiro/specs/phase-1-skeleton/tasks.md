@@ -19,12 +19,31 @@ every environment variable with no secrets in it, and a `Makefile` whose
 
 ## 2. Store
 
-- [ ] 2.1 Add migration runner + schema v1: `familiar`, `life`,
+- [x] 2.1 Add migration runner + schema v1: `familiar`, `life`,
       `metric_sample` (fields per PROJECT_PLAN.md §8, Phase 1 subset),
       SQLite WAL mode.
-- [ ] 2.2 Implement store functions: create familiar + first life,
+- [x] 2.2 Implement store functions: create familiar + first life,
       insert sample, list familiars with latest sample, touch last-seen.
-- [ ] 2.3 Table-driven tests for the store against a temp DB file.
+- [x] 2.3 Table-driven tests for the store against a temp DB file.
+
+Decisions taken here, recorded because later phases inherit them:
+
+- The dependency conversation `design.md` anticipated is settled:
+  **`modernc.org/sqlite` v1.62.0**, approved by the keeper. Pure Go, so
+  `CGO_ENABLED=0` still yields a static binary. Only `cmd/lab` imports it;
+  `go list -deps ./cmd/agent` shows no third-party package, and the agent
+  binary is unchanged at 1.7 MB against the lab's 10.3 MB.
+- **A host profile belongs to `life`, not to `familiar`.** A familiar is the
+  soul, a life is a body, and a body is a machine. Reincarnation in Phase 4
+  therefore closes one life and opens another without touching the familiar
+  row. A partial unique index enforces at most one open life per familiar.
+- **Timestamps are INTEGER Unix milliseconds**, not text: text timestamps
+  mis-sort as soon as fractional-second width varies, and "the latest
+  sample" has to be exact.
+- Tables are `STRICT`; tokens are stored only as a SHA-256 hash; foreign
+  keys cascade, so deleting a familiar takes its lives and samples with it.
+- Migrations run when `store.Open` is called, which `cmd/lab` does at
+  startup — the hard rule in `tech-rules.md`.
 
 ## 3. Agent
 
